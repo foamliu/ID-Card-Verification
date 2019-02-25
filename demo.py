@@ -48,15 +48,16 @@ if __name__ == "__main__":
     model.eval()
     threshold = 73.18799151798612
 
-    output = model(imgs)
+    with torch.no_grad():
+        output = model(imgs)
 
-    feature0 = output[0].cpu().numpy()
-    feature1 = output[1].cpu().numpy()
-    x0 = feature0 / np.linalg.norm(feature0)
-    x1 = feature1 / np.linalg.norm(feature1)
-    cosine = np.dot(x0, x1)
-    theta = math.acos(cosine)
-    theta = theta * 180 / math.pi
+        feature0 = output[0].cpu().numpy()
+        feature1 = output[1].cpu().numpy()
+        x0 = feature0 / np.linalg.norm(feature0)
+        x1 = feature1 / np.linalg.norm(feature1)
+        cosine = np.dot(x0, x1)
+        theta = math.acos(cosine)
+        theta = theta * 180 / math.pi
 
     print(theta)
     print(theta < threshold)
