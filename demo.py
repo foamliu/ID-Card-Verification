@@ -22,6 +22,14 @@ data_transforms = {
 }
 transformer = data_transforms['val']
 
+checkpoint = 'BEST_checkpoint.tar'
+checkpoint = torch.load(checkpoint)
+model = checkpoint['model']
+model = model.to(device)
+model.eval()
+
+threshold = 73.18799151798612
+
 
 def get_image(filename):
     _, _, landmarks = get_face_all_attributes(filename)
@@ -32,21 +40,14 @@ def get_image(filename):
     return img
 
 
-if __name__ == "__main__":
-    id_card_fn = 'id_card.jpg'
-    img0 = get_image(id_card_fn)
-    photo_fn = 'photo_1.jpg'
-    img1 = get_image(photo_fn)
+def compare(fn_0, fn_1):
+    print('fn_0: ' + fn_0)
+    print('fn_1: ' + fn_1)
+    img0 = get_image(fn_0)
+    img1 = get_image(fn_1)
     imgs = torch.zeros([2, 3, 112, 112], dtype=torch.float)
     imgs[0] = img0
     imgs[1] = img1
-
-    checkpoint = 'BEST_checkpoint.tar'
-    checkpoint = torch.load(checkpoint)
-    model = checkpoint['model']
-    model = model.to(device)
-    model.eval()
-    threshold = 73.18799151798612
 
     with torch.no_grad():
         output = model(imgs)
@@ -61,3 +62,10 @@ if __name__ == "__main__":
 
     print(theta)
     print(theta < threshold)
+
+
+if __name__ == "__main__":
+    compare('id_card.jpg', 'photo_1.jpg')
+    compare('id_card.jpg', 'photo_2.jpg')
+    compare('id_card.jpg', 'photo_3.jpg')
+    compare('id_card.jpg', 'photo_4.jpg')
